@@ -1,0 +1,4 @@
+copper ore
+copper plate
+copper cable
+plastic
