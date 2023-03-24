@@ -1,36 +1,26 @@
 (deftemplate recipe
   (slot product (type STRING))
-  (slot product_number (type INTEGER))
+  (slot yield (type INTEGER))
   (multislot ingredients)
-  (multislot ingredient_number)
   (slot time)
 )
 
-(deffacts existing_recipes
-  (recipe
-    (product "plastic")
-    (product_number 1)
-    (ingredients "petroleum" "coal")
-    (ingredient_number 20 1)
-    (time 1)
-  )
+(deffunction ingredient_count (?i)
+  (div (length$ ?i) 2)
+)
 
-  (recipe
-    (product "copper cable")
-    (product_number 2)
-    (ingredients "copper plates")
-    (ingredient_number 1)
-    (time 0.5)
-  )
+(deffunction nth-ingredient (?i $?n)
+  (nth$ (- (* 2 ?i) 1) $?n)
 )
 
 (defrule get_ingredients
-  ?req <- (request ?product)
+  ?req <- (request ?product ?level)
   (recipe (product ?product) (ingredients $?ingredients))
   =>
-  (foreach ?ingredient $?ingredients
-    (assert (request ?ingredient))
-    (printout t "Requesting " ?ingredient crlf)
+  (printout t "Requesting " (ingredient_count $?ingredients) " ingredients for " ?product " (level " ?level ")" crlf)
+  (loop-for-count (?i (ingredient_count $?ingredients))
+    (printout t ?i ".- Requesting " (nth-ingredient ?i $?ingredients) crlf)
+    (assert (request (nth-ingredient ?i $?ingredients) (+ 1 ?level)))
   )
   (retract ?req)
 )
