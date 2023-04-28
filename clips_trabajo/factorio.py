@@ -1,24 +1,16 @@
 import clips
 
-env = clips.Environment()
+class FactorioCalc:
 
-env.load('factorio.clp')
+    def __init__(self):
+        self.env = clips.Environment()
+        self.env.load('factorio.clp')
+        self.env.load('recipes.clp')
+        self.env.reset()
 
-def process_request(request):
-    if request == "exit":
-        return None
-    ...
-
-while True:
-    peticion = input('¿Qué quieres hacer? ')
-    peticion_procesada = process_request(peticion)
-    if peticion_procesada is None:
-        break
-
-
-    # metemos hechos en el motor de inferencia
-    ...
+    def production_tree(self, item, amount):
+        self.env.reset()
+        self.env.assert_string(f'(request "{item}" {amount})')
+        self.env.run()
+        return self.env.facts()
     
-    env.run()
-
-    # sacamos hechos del motor de inferencia
