@@ -25,6 +25,30 @@
   (nth$ (* 2 ?i) $?n)
 )
 
+; --- Fractions ---
+
+(deffunction frac_eval (?frac)
+  (/ (nth$ 1 ?frac) (nth$ 2 ?frac))
+)
+
+(deffunction frac_mul2 (?frac_a ?frac_b)
+  (bind ?num_a (nth$ 1 $?frac_a))
+  (bind ?den_a (nth$ 2 $?frac_a))
+  (bind ?num_b (nth$ 1 $?frac_b))
+  (bind ?den_b (nth$ 2 $?frac_b))
+  (create$ (* ?num_a ?num_b) (* ?den_a ?den_b))
+)
+
+(deffunction frac_mul ($?fracs)
+  (bind ?frac (nth$ 1 $?fracs))
+  (loop-for-count (?i (- (length$ $?fracs) 1))
+    (bind ?frac (frac_mul2 ?frac (nth$ (+ 1 ?i) $?fracs)))
+  )
+  ?frac
+)
+
+; --- ---
+
 (deffacts raw_materials
   (raw_material "water")
   (raw_material "crude-oil")
