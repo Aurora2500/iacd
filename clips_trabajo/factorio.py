@@ -41,14 +41,28 @@ def create_tree(tree_facts, factory_facts, power_facts):
     root_node = next(fact_map[f[2]] for f in tree_facts if f[3] == 'nil')
     return root_node
 
-
-starting_factories = [
-    'assembling-machine-2',
-    'steel-furnace',
+always_present_factories = [
     'chemical-plant',
     'oil-refinery',
 ]
 
+valid_factories = {
+    'assembler': {
+        'assembling-machine-1',
+        'assembling-machine-2',
+        'assembling-machine-3',
+    },
+    'furnace': {
+        'stone-furnace',
+        'steel-furnace',
+        'electric-furnace',
+    },
+}
+
+default_factories = {
+    'assembler': 'assembling-machine-1',
+    'furnace': 'stone-furnace',
+}
 
 class FactorioCalc:
 
@@ -60,10 +74,17 @@ class FactorioCalc:
         self.env.load('factorio.clp')
         self.env.load('gen.clp')
         self.env.reset()
+        self.factories = default_factories.copy()
+
+    def set_factory(self, factory_type, factory):
+        if factory in valid_factories[factory_type]:
+            self.factories[factory_type] = factory
 
     def production_tree(self, item, amount):
         self.env.reset()
-        for fac in starting_factories:
+        for fac in always_present_factories:
+            self.env.assert_string(f'(available_factory "{fac}")')
+        for fac in self.factories.values():
             self.env.assert_string(f'(available_factory "{fac}")')
         self.env.assert_string(f'(request "{item}" {amount})')
         self.env.run()

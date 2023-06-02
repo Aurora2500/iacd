@@ -2,22 +2,15 @@ from factorio import FactorioCalc
 
 calc = FactorioCalc()
 
-def process_request(request):
-    parts = request.split()
-    if request == "exit":
-        return None
-    if parts[0] == 'tree':
-        item = parts[1]
-        amount = parts[2]
-        facts = calc.production_tree(item, amount)
-        for fact in facts:
-            print(fact)
-
 while True:
-    peticion = input('¿Qué quieres hacer? ')
-    peticion_procesada = process_request(peticion)
-    if peticion_procesada is None:
+    request = input('¿Qué quieres hacer? ')
+    if request == "exit":
         break
-    
-
-    # sacamos hechos del motor de inferencia
+    parts = request.split()
+    if parts[0] == 'tree':
+        tree = calc.production_tree(parts[1], int(parts[2]))
+        tree.print_tree()
+        continue
+    if parts[0] == 'set':
+        calc.set_factory(parts[1], parts[2])
+        continue
